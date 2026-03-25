@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gallery — LUMIÈRE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #f5f0e8; --ink: #1a1410; --gold: #c9a84c;
+      --rust: #b85c38; --sage: #7a8c6e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Cormorant Garamond', serif; background: var(--cream); color: var(--ink); }
+
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 3rem;
+      background: rgba(245,240,232,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+    }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; letter-spacing: 0.18em; color: var(--ink); text-decoration: none; }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); text-decoration: none; transition: color 0.25s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+    .nav-cart { display: flex; align-items: center; gap: 0.5rem; font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--ink); color: var(--cream); padding: 0.55rem 1.2rem; text-decoration: none; transition: background 0.25s; }
+    .nav-cart:hover { background: var(--gold); }
+    .cart-count { background: var(--rust); color: #fff; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.65rem; }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 8rem 4rem 3rem;
+      border-bottom: 1px solid rgba(201,168,76,0.25);
+    }
+    .page-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+    .page-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3.5rem); }
+
+    /* FILTERS */
+    .gallery-controls {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem 4rem;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .filter-tabs { display: flex; gap: 0; }
+    .filter-tab {
+      padding: 0.55rem 1.4rem;
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      background: transparent; border: 1px solid rgba(26,20,16,0.2);
+      border-right: none; cursor: pointer; color: var(--ink);
+      transition: all 0.2s;
+    }
+    .filter-tab:last-child { border-right: 1px solid rgba(26,20,16,0.2); }
+    .filter-tab.active, .filter-tab:hover { background: var(--ink); color: var(--cream); }
+    .sort-select {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.1em; border: 1px solid rgba(26,20,16,0.2);
+      background: transparent; padding: 0.55rem 1rem;
+      color: var(--ink); cursor: pointer; outline: none;
+    }
+
+    /* GRID */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2.5rem;
+      padding: 3rem 4rem;
+    }
+    .art-card { cursor: pointer; }
+    .art-card-img {
+      width: 100%; aspect-ratio: 3/4;
+      overflow: hidden; position: relative;
+      background: #e0d9cd;
+    }
+    .art-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .art-card:hover .art-card-img img { transform: scale(1.06); }
+    .art-badge {
+      position: absolute; top: 1rem; left: 1rem;
+      background: var(--rust); color: #fff;
+      font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+    }
+    .art-badge.sold { background: #555; }
+    .art-badge.limited { background: var(--sage); }
+    .art-card-overlay {
+      position: absolute; inset: 0;
+      background: rgba(26,20,16,0.75);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .art-card:hover .art-card-overlay { opacity: 1; }
+    .overlay-btn {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      background: var(--gold); color: var(--ink);
+      padding: 0.8rem 1.8rem; border: none; cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .overlay-btn:hover { background: var(--cream); }
+    .art-card-info { padding: 1.2rem 0 0; }
+    .art-artist { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sage); margin-bottom: 0.3rem; }
+    .art-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-style: italic; margin-bottom: 0.4rem; }
+    .art-meta { display: flex; justify-content: space-between; align-items: center; }
+    .art-price { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 500; color: var(--gold); }
+    .art-medium { font-size: 0.8rem; color: #8a7a6a; }
+
+    /* ADD TO CART TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--ink); color: var(--cream);
+      padding: 1rem 1.8rem;
+      font-family: 'DM Mono', monospace; font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      transform: translateY(120%);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 999;
+      border-left: 3px solid var(--gold);
+    }
+    .toast.show { transform: translateY(0); }
+
+    footer { background: var(--ink); color: var(--cream); text-align: center; padding: 2rem; font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; color: #5a5040; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">LUMI<span>È</span>RE</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="gallery.html" class="active">Gallery</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <a href="cart.html" class="nav-cart">◻ Cart <span class="cart-count" id="nav-count">0</span></a>
+</nav>
+
+<div class="page-header">
+  <p class="page-label">Our Collection</p>
+  <h1 class="page-title">The Gallery</h1>
+</div>
+
+<div class="gallery-controls">
+  <div class="filter-tabs">
+    <button class="filter-tab active" onclick="filterArt('all', this)">All</button>
+    <button class="filter-tab" onclick="filterArt('painting', this)">Painting</button>
+    <button class="filter-tab" onclick="filterArt('photography', this)">Photography</button>
+    <button class="filter-tab" onclick="filterArt('sculpture', this)">Sculpture</button>
+    <button class="filter-tab" onclick="filterArt('mixed', this)">Mixed Media</button>
+  </div>
+  <select class="sort-select" onchange="sortArt(this.value)">
+    <option value="featured">Featured</option>
+    <option value="price-asc">Price: Low to High</option>
+    <option value="price-desc">Price: High to Low</option>
+    <option value="newest">Newest</option>
+  </select>
+</div>
+
+<div class="gallery-grid" id="gallery-grid"></div>
+
+<div class="toast" id="toast">✓ Added to cart</div>
+
+<footer>© 2025 LUMIÈRE Fine Art Gallery</footer>
+
+<script>
+const artworks = [
+  { id:1, title:"Golden Silence", artist:"Elena Vasquez", price:85000, medium:"Oil on Canvas", category:"painting", badge:"New", img:"https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=500&q=80", size:"90×120 cm" },
+  { id:2, title:"Urban Reverie", artist:"Marcus Chen", price:120000, medium:"Photography", category:"photography", badge:"", img:"https://images.unsplash.com/photo-1547826039-bdbea1c1b748?w=500&q=80", size:"60×90 cm" },
+  { id:3, title:"Chromatic Dream", artist:"Amara Osei", price:65000, medium:"Mixed Media", category:"mixed", badge:"Limited", img:"https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=500&q=80", size:"80×80 cm" },
+  { id:4, title:"Still Waters", artist:"Priya Nair", price:95000, medium:"Watercolour", category:"painting", badge:"", img:"https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=500&q=80", size:"70×100 cm" },
+  { id:5, title:"Fractured Light", artist:"Jonah Reed", price:145000, medium:"Oil on Canvas", category:"painting", badge:"", img:"https://images.unsplash.com/photo-1579541814924-49fef17c5be5?w=500&q=80", size:"120×150 cm" },
+  { id:6, title:"Meridian", artist:"Soo-Jin Park", price:55000, medium:"Photography", category:"photography", badge:"", img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=500&q=80", size:"50×70 cm" },
+  { id:7, title:"Terracotta Soul", artist:"Kwame Asante", price:185000, medium:"Sculpture", category:"sculpture", badge:"Limited", img:"https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=500&q=80", size:"45×30×30 cm" },
+  { id:8, title:"Between Dusk", artist:"Elena Vasquez", price:72000, medium:"Mixed Media", category:"mixed", badge:"", img:"https://images.unsplash.com/photo-1556636530-6b7482d80e3d?w=500&q=80", size:"80×60 cm" },
+  { id:9, title:"Echo Chamber", artist:"Marcus Chen", price:98000, medium:"Photography", category:"photography", badge:"Sold", img:"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&q=80", size:"100×70 cm" },
+];
+
+let filtered = [...artworks];
+let activeCategory = 'all';
+
+function renderGrid(items) {
+  const grid = document.getElementById('gallery-grid');
+  grid.innerHTML = items.map(a => `
+    <div class="art-card" data-category="${a.category}">
+      <div class="art-card-img">
+        <img src="${a.img}" alt="${a.title}" loading="lazy"/>
+        ${a.badge ? `<span class="art-badge ${a.badge==='Sold'?'sold':''} ${a.badge==='Limited'?'limited':''}">${a.badge}</span>` : ''}
+        <div class="art-card-overlay">
+          ${a.badge !== 'Sold' ? `<button class="overlay-btn" onclick="addToCart(${a.id}, event)">Add to Cart</button>` : `<span class="overlay-btn" style="background:#555;cursor:default">Sold Out</span>`}
+        </div>
+      </div>
+      <div class="art-card-info">
+        <p class="art-artist">${a.artist}</p>
+        <a href="product.html?id=${a.id}" style="text-decoration:none;color:inherit;">
+          <h3 class="art-title">${a.title}</h3>
+        </a>
+        <div class="art-meta">
+          <span class="art-price">₹${a.price.toLocaleString('en-IN')}</span>
+          <span class="art-medium">${a.medium}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterArt(cat, btn) {
+  activeCategory = cat;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  filtered = cat === 'all' ? [...artworks] : artworks.filter(a => a.category === cat);
+  renderGrid(filtered);
+}
+
+function sortArt(val) {
+  if (val === 'price-asc') filtered.sort((a,b) => a.price - b.price);
+  else if (val === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+  else if (val === 'newest') filtered.sort((a,b) => b.id - a.id);
+  else filtered.sort((a,b) => a.id - b.id);
+  renderGrid(filtered);
+}
+
+function addToCart(id, e) {
+  e.stopPropagation();
+  const art = artworks.find(a => a.id === id);
+  const cart = JSON.parse(localStorage.getItem('lumiere_cart') || '[]');
+  if (!cart.find(c => c.id === id)) cart.push(art);
+  localStorage.setItem('lumiere_cart', JSON.stringify(cart));
+  document.getElementById('nav-count').textContent = cart.length;
+  const toast = document.getElementById('toast');
+  toast.textContent = `✓ "${art.title}" added to cart`;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem('lumiere_cart') || '[]');
+  document.getElementById('nav-count').textContent = cart.length;
+}
+
+renderGrid(artworks);
+updateCartCount();
+</script>
+</body>
+</html>
