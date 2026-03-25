@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LUMIÈRE — Fine Art Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #f5f0e8;
+      --ink: #1a1410;
+      --gold: #c9a84c;
+      --rust: #b85c38;
+      --sage: #7a8c6e;
+      --shadow: rgba(26,20,16,0.08);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Cormorant Garamond', serif;
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 3rem;
+      background: rgba(245,240,232,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; letter-spacing: 0.18em; color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ink); text-decoration: none;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cart {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--ink); color: var(--cream);
+      padding: 0.55rem 1.2rem; text-decoration: none;
+      transition: background 0.25s;
+    }
+    .nav-cart:hover { background: var(--gold); }
+    .cart-count {
+      background: var(--rust); color: #fff;
+      border-radius: 50%; width: 18px; height: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.65rem;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 5rem;
+    }
+    .hero-text {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 5rem 4rem 5rem 5rem;
+    }
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.5rem;
+    }
+    .hero-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 5vw, 5.5rem);
+      line-height: 1.08; margin-bottom: 1.8rem;
+    }
+    .hero-heading em { font-style: italic; color: var(--rust); }
+    .hero-sub {
+      font-size: 1.2rem; font-weight: 300; line-height: 1.7;
+      color: #5a5040; max-width: 400px; margin-bottom: 2.5rem;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--ink); color: var(--cream);
+      padding: 1rem 2.5rem;
+      font-family: 'DM Mono', monospace; font-size: 0.8rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+    .btn-primary:hover { background: transparent; color: var(--ink); border-color: var(--ink); }
+    .btn-secondary {
+      display: inline-block;
+      background: transparent; color: var(--ink);
+      padding: 1rem 2.5rem;
+      font-family: 'DM Mono', monospace; font-size: 0.8rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      text-decoration: none;
+      border: 2px solid var(--ink);
+      margin-left: 1rem;
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover { background: var(--ink); color: var(--cream); }
+    .hero-visual {
+      position: relative; overflow: hidden;
+      background: #1a1410;
+    }
+    .hero-mosaic {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      height: 100%;
+    }
+    .hero-mosaic-row { display: grid; grid-template-columns: 1fr 1fr; }
+    .mosaic-cell {
+      overflow: hidden;
+      position: relative;
+    }
+    .mosaic-cell img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.8s ease;
+      filter: saturate(0.85);
+    }
+    .mosaic-cell:hover img { transform: scale(1.07); filter: saturate(1.1); }
+    .mosaic-cell .overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 60%, rgba(26,20,16,0.5));
+    }
+
+    /* ── TICKER ── */
+    .ticker {
+      background: var(--gold); color: var(--ink);
+      padding: 0.7rem 0; overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker-inner {
+      display: inline-block;
+      animation: ticker 30s linear infinite;
+    }
+    .ticker-inner span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+      margin: 0 2.5rem;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── FEATURED COLLECTION ── */
+    .section { padding: 6rem 4rem; }
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 3.5rem;
+    }
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 0.6rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3vw, 3.2rem);
+    }
+    .view-all {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ink); text-decoration: none;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .view-all:hover { color: var(--gold); border-color: var(--gold); }
+    .art-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .art-card {
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .art-card:hover { transform: translateY(-6px); }
+    .art-card-img {
+      width: 100%; aspect-ratio: 3/4;
+      overflow: hidden; position: relative;
+      background: #e0d9cd;
+    }
+    .art-card-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .art-card:hover .art-card-img img { transform: scale(1.06); }
+    .art-badge {
+      position: absolute; top: 1rem; left: 1rem;
+      background: var(--rust); color: #fff;
+      font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+    }
+    .art-card-info { padding: 1.2rem 0 0; }
+    .art-artist {
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 0.3rem;
+    }
+    .art-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-style: italic;
+      margin-bottom: 0.6rem;
+    }
+    .art-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; font-weight: 500;
+      color: var(--gold);
+    }
+
+    /* ── ABOUT STRIP ── */
+    .about-strip {
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: var(--ink); color: var(--cream);
+      min-height: 60vh;
+    }
+    .about-img { position: relative; overflow: hidden; }
+    .about-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+    .about-text {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 5rem;
+    }
+    .about-text .section-label { color: var(--gold); }
+    .about-text .section-title { color: var(--cream); margin-bottom: 1.5rem; }
+    .about-text p { font-size: 1.1rem; font-weight: 300; line-height: 1.8; color: #c9bfb0; margin-bottom: 1.5rem; }
+    .btn-light {
+      display: inline-block;
+      background: transparent; color: var(--cream);
+      padding: 0.9rem 2.2rem;
+      font-family: 'DM Mono', monospace; font-size: 0.78rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      text-decoration: none;
+      border: 1.5px solid var(--cream);
+      transition: all 0.3s;
+      align-self: flex-start;
+    }
+    .btn-light:hover { background: var(--cream); color: var(--ink); }
+
+    /* ── STATS ── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      border-top: 1px solid rgba(201,168,76,0.3);
+      border-bottom: 1px solid rgba(201,168,76,0.3);
+    }
+    .stat {
+      padding: 3rem 2rem;
+      text-align: center;
+      border-right: 1px solid rgba(201,168,76,0.2);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem; color: var(--gold); display: block;
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: #8a7a6a; margin-top: 0.4rem;
+    }
+
+    /* ── NEWSLETTER ── */
+    .newsletter {
+      background: var(--sage); color: var(--cream);
+      padding: 5rem 4rem; text-align: center;
+    }
+    .newsletter h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem; margin-bottom: 1rem;
+    }
+    .newsletter p { font-size: 1.1rem; font-weight: 300; margin-bottom: 2.5rem; opacity: 0.85; }
+    .newsletter-form { display: flex; max-width: 480px; margin: 0 auto; gap: 0; }
+    .newsletter-form input {
+      flex: 1; padding: 1rem 1.5rem;
+      border: none; background: rgba(255,255,255,0.15);
+      color: var(--cream); font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; outline: none;
+    }
+    .newsletter-form input::placeholder { color: rgba(245,240,232,0.6); }
+    .newsletter-form button {
+      padding: 1rem 2rem;
+      background: var(--gold); color: var(--ink); border: none;
+      font-family: 'DM Mono', monospace; font-size: 0.75rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.25s;
+    }
+    .newsletter-form button:hover { background: var(--ink); color: var(--cream); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink); color: var(--cream);
+      padding: 4rem; display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+    }
+    .footer-brand { }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; letter-spacing: 0.18em;
+      color: var(--cream); margin-bottom: 1rem; display: block;
+    }
+    .footer-logo span { color: var(--gold); }
+    footer p { font-size: 0.95rem; font-weight: 300; color: #8a7a6a; line-height: 1.7; }
+    .footer-col h4 {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.2rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 0.7rem; }
+    .footer-col a {
+      color: #8a7a6a; text-decoration: none;
+      font-size: 0.95rem; font-weight: 300;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--cream); }
+    .footer-bottom {
+      background: #100d0a; color: #5a5040;
+      text-align: center; padding: 1.2rem;
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-up {
+      opacity: 0; transform: translateY(30px);
+      animation: fadeUp 0.8s ease forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up:nth-child(2) { animation-delay: 0.15s; }
+    .fade-up:nth-child(3) { animation-delay: 0.3s; }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-visual { height: 50vh; }
+      .art-grid { grid-template-columns: 1fr 1fr; }
+      .about-strip { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      nav { padding: 1rem 1.5rem; }
+      .section { padding: 4rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">LUMI<span>È</span>RE</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <a href="cart.html" class="nav-cart">
+    ◻ Cart <span class="cart-count" id="nav-count">0</span>
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <p class="hero-eyebrow fade-up">Est. 2010 · Fine Art Gallery</p>
+    <h1 class="hero-heading fade-up">
+      Where Art<br>Finds Its<br><em>Home</em>
+    </h1>
+    <p class="hero-sub fade-up">Curated works from emerging and established artists, spanning painting, sculpture, photography, and mixed media.</p>
+    <div class="fade-up">
+      <a href="gallery.html" class="btn-primary">Explore Collection</a>
+      <a href="contact.html" class="btn-secondary">Visit Us</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-mosaic">
+      <div class="hero-mosaic-row">
+        <div class="mosaic-cell">
+          <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=500&q=80" alt="Art 1"/>
+          <div class="overlay"></div>
+        </div>
+        <div class="mosaic-cell">
+          <img src="https://images.unsplash.com/photo-1547826039-bdbea1c1b748?w=500&q=80" alt="Art 2"/>
+          <div class="overlay"></div>
+        </div>
+      </div>
+      <div class="hero-mosaic-row">
+        <div class="mosaic-cell">
+          <img src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=500&q=80" alt="Art 3"/>
+          <div class="overlay"></div>
+        </div>
+        <div class="mosaic-cell">
+          <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=500&q=80" alt="Art 4"/>
+          <div class="overlay"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>Oil on Canvas</span><span>·</span>
+    <span>Photography</span><span>·</span>
+    <span>Mixed Media</span><span>·</span>
+    <span>Sculpture</span><span>·</span>
+    <span>Watercolour</span><span>·</span>
+    <span>Digital Art</span><span>·</span>
+    <span>Limited Editions</span><span>·</span>
+    <span>Commissions Open</span><span>·</span>
+    <span>Oil on Canvas</span><span>·</span>
+    <span>Photography</span><span>·</span>
+    <span>Mixed Media</span><span>·</span>
+    <span>Sculpture</span><span>·</span>
+    <span>Watercolour</span><span>·</span>
+    <span>Digital Art</span><span>·</span>
+    <span>Limited Editions</span><span>·</span>
+    <span>Commissions Open</span>
+  </div>
+</div>
+
+<!-- FEATURED COLLECTION -->
+<section class="section">
+  <div class="section-header">
+    <div>
+      <p class="section-label">Curated Picks</p>
+      <h2 class="section-title">Featured Works</h2>
+    </div>
+    <a href="gallery.html" class="view-all">View All →</a>
+  </div>
+  <div class="art-grid">
+    <a href="product.html?id=1" class="art-card" style="text-decoration:none;color:inherit;">
+      <div class="art-card-img">
+        <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=600&q=80" alt="Golden Silence"/>
+        <span class="art-badge">New</span>
+      </div>
+      <div class="art-card-info">
+        <p class="art-artist">Elena Vasquez</p>
+        <h3 class="art-title">Golden Silence</h3>
+        <p class="art-price">₹85,000</p>
+      </div>
+    </a>
+    <a href="product.html?id=2" class="art-card" style="text-decoration:none;color:inherit;">
+      <div class="art-card-img">
+        <img src="https://images.unsplash.com/photo-1547826039-bdbea1c1b748?w=600&q=80" alt="Urban Reverie"/>
+      </div>
+      <div class="art-card-info">
+        <p class="art-artist">Marcus Chen</p>
+        <h3 class="art-title">Urban Reverie</h3>
+        <p class="art-price">₹1,20,000</p>
+      </div>
+    </a>
+    <a href="product.html?id=3" class="art-card" style="text-decoration:none;color:inherit;">
+      <div class="art-card-img">
+        <img src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=600&q=80" alt="Chromatic Dream"/>
+        <span class="art-badge" style="background:var(--sage)">Limited</span>
+      </div>
+      <div class="art-card-info">
+        <p class="art-artist">Amara Osei</p>
+        <h3 class="art-title">Chromatic Dream</h3>
+        <p class="art-price">₹65,000</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ABOUT STRIP -->
+<section class="about-strip">
+  <div class="about-img">
+    <img src="https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=800&q=80" alt="Gallery Interior"/>
+  </div>
+  <div class="about-text">
+    <p class="section-label">Our Story</p>
+    <h2 class="section-title">A Space for Transformative Art</h2>
+    <p>LUMIÈRE was founded with one conviction: that art has the power to transform not just spaces, but lives. We partner with artists worldwide to bring extraordinary works to collectors who believe the same.</p>
+    <p>Every piece in our collection is personally curated, authenticated, and accompanied by a certificate of provenance.</p>
+    <a href="contact.html" class="btn-light">Meet the Team</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat">
+    <span class="stat-num">480+</span>
+    <span class="stat-label">Artworks Sold</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">120</span>
+    <span class="stat-label">Artists Represented</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">38</span>
+    <span class="stat-label">Countries Reached</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">14</span>
+    <span class="stat-label">Years of Excellence</span>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <h2>Stay in the Loop</h2>
+  <p>New arrivals, exclusive previews, and collector events — straight to your inbox.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="your@email.com"/>
+    <button>Subscribe</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <span class="footer-logo">LUMI<span>È</span>RE</span>
+    <p>A curated fine art gallery presenting exceptional works from artists across the globe. Available for private viewings and corporate commissions.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Gallery</h4>
+    <ul>
+      <li><a href="gallery.html">All Works</a></li>
+      <li><a href="gallery.html">Paintings</a></li>
+      <li><a href="gallery.html">Photography</a></li>
+      <li><a href="gallery.html">Sculpture</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Services</h4>
+    <ul>
+      <li><a href="#">Commissions</a></li>
+      <li><a href="#">Framing</a></li>
+      <li><a href="#">Valuation</a></li>
+      <li><a href="#">Corporate Art</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Info</h4>
+    <ul>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="#">Shipping Policy</a></li>
+      <li><a href="#">Returns</a></li>
+      <li><a href="#">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">© 2025 LUMIÈRE Fine Art Gallery · All Rights Reserved</div>
+
+<script>
+  // Update cart count from localStorage
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('lumiere_cart') || '[]');
+    document.getElementById('nav-count').textContent = cart.length;
+  }
+  updateCartCount();
+</script>
+</body>
+</html>
