@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Artwork — LUMIÈRE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root { --cream:#f5f0e8; --ink:#1a1410; --gold:#c9a84c; --rust:#b85c38; --sage:#7a8c6e; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Cormorant Garamond',serif;background:var(--cream);color:var(--ink);}
+    nav{position:fixed;top:0;width:100%;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 3rem;background:rgba(245,240,232,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,0.2);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;letter-spacing:0.18em;color:var(--ink);text-decoration:none;}
+    .nav-logo span{color:var(--gold);}
+    .nav-links{display:flex;gap:2.2rem;list-style:none;}
+    .nav-links a{font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);text-decoration:none;transition:color 0.25s;}
+    .nav-links a:hover{color:var(--gold);}
+    .nav-cart{display:flex;align-items:center;gap:0.5rem;font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--ink);color:var(--cream);padding:0.55rem 1.2rem;text-decoration:none;transition:background 0.25s;}
+    .nav-cart:hover{background:var(--gold);}
+    .cart-count{background:var(--rust);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:0.65rem;}
+
+    .breadcrumb{padding:7rem 4rem 0;display:flex;gap:0.8rem;align-items:center;}
+    .breadcrumb a,.breadcrumb span{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:#8a7a6a;text-decoration:none;}
+    .breadcrumb a:hover{color:var(--gold);}
+    .breadcrumb .sep{color:#ccc;}
+
+    /* PRODUCT LAYOUT */
+    .product-layout{
+      display:grid;grid-template-columns:1fr 1fr;
+      gap:5rem;padding:2rem 4rem 5rem;
+      max-width:1300px;margin:0 auto;
+    }
+    .product-gallery{position:relative;}
+    .main-img{
+      width:100%;aspect-ratio:3/4;object-fit:cover;
+      background:#e0d9cd;
+      transition:opacity 0.3s;
+    }
+    .thumb-row{display:flex;gap:0.8rem;margin-top:1rem;}
+    .thumb{
+      width:80px;height:80px;object-fit:cover;cursor:pointer;
+      border:2px solid transparent;transition:border-color 0.2s;
+      opacity:0.6;
+    }
+    .thumb.active,.thumb:hover{border-color:var(--gold);opacity:1;}
+
+    /* ZOOM OVERLAY */
+    .zoom-btn{
+      position:absolute;bottom:1rem;right:1rem;
+      background:rgba(26,20,16,0.75);color:var(--cream);
+      border:none;cursor:pointer;padding:0.6rem 1rem;
+      font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;
+    }
+    .zoom-modal{
+      position:fixed;inset:0;background:rgba(0,0,0,0.92);
+      display:none;align-items:center;justify-content:center;
+      z-index:999;
+    }
+    .zoom-modal.open{display:flex;}
+    .zoom-modal img{max-width:90vw;max-height:90vh;object-fit:contain;}
+    .zoom-close{position:fixed;top:2rem;right:2rem;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;}
+
+    /* PRODUCT INFO */
+    .product-info{padding-top:1rem;}
+    .product-label{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--sage);margin-bottom:0.5rem;}
+    .product-title{font-family:'Playfair Display',serif;font-size:2.8rem;font-style:italic;line-height:1.15;margin-bottom:0.6rem;}
+    .product-artist{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#6a5a4a;margin-bottom:2rem;}
+    .product-price{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold);margin-bottom:2rem;}
+
+    /* SPECS */
+    .specs{border-top:1px solid rgba(201,168,76,0.25);padding-top:1.5rem;margin-bottom:2rem;}
+    .specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem 2rem;margin-top:1rem;}
+    .spec{border-left:2px solid var(--gold);padding-left:0.8rem;}
+    .spec-label{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:#8a7a6a;margin-bottom:0.2rem;}
+    .spec-value{font-size:0.95rem;color:var(--ink);}
+
+    /* ACTIONS */
+    .product-actions{display:flex;flex-direction:column;gap:1rem;margin-bottom:2.5rem;}
+    .btn-add{
+      background:var(--ink);color:var(--cream);
+      padding:1.1rem 2rem;border:2px solid var(--ink);
+      font-family:'DM Mono',monospace;font-size:0.8rem;
+      letter-spacing:0.14em;text-transform:uppercase;
+      cursor:pointer;transition:all 0.3s;width:100%;
+    }
+    .btn-add:hover{background:transparent;color:var(--ink);}
+    .btn-buy{
+      background:var(--gold);color:var(--ink);
+      padding:1.1rem 2rem;border:2px solid var(--gold);
+      font-family:'DM Mono',monospace;font-size:0.8rem;
+      letter-spacing:0.14em;text-transform:uppercase;
+      cursor:pointer;transition:all 0.3s;width:100%;
+      text-align:center;text-decoration:none;display:block;
+    }
+    .btn-buy:hover{background:transparent;color:var(--gold);}
+
+    /* DESCRIPTION */
+    .product-desc{border-top:1px solid rgba(201,168,76,0.25);padding-top:1.5rem;}
+    .product-desc h4{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:0.8rem;}
+    .product-desc p{font-size:1rem;font-weight:300;line-height:1.8;color:#5a5040;}
+
+    /* ACCORDION */
+    .accordion{margin-top:2rem;}
+    .acc-item{border-top:1px solid rgba(201,168,76,0.2);}
+    .acc-header{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:1rem 0;cursor:pointer;
+      font-family:'DM Mono',monospace;font-size:0.72rem;
+      letter-spacing:0.12em;text-transform:uppercase;
+      background:none;border:none;width:100%;color:var(--ink);
+    }
+    .acc-body{display:none;padding-bottom:1rem;font-size:0.95rem;font-weight:300;color:#5a5040;line-height:1.7;}
+    .acc-body.open{display:block;}
+
+    /* RELATED */
+    .related{padding:4rem;border-top:1px solid rgba(201,168,76,0.2);}
+    .section-label{font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem;}
+    .section-title{font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:2rem;}
+    .related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;}
+    .rel-card{cursor:pointer;text-decoration:none;color:inherit;}
+    .rel-card img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#e0d9cd;transition:transform 0.4s;}
+    .rel-card:hover img{transform:scale(1.04);}
+    .rel-card p{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--sage);margin-top:0.8rem;}
+    .rel-card h4{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;margin:0.2rem 0;}
+    .rel-card span{color:var(--gold);font-size:0.95rem;}
+
+    .toast{position:fixed;bottom:2rem;right:2rem;background:var(--ink);color:var(--cream);padding:1rem 1.8rem;font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:0.1em;transform:translateY(120%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);z-index:998;border-left:3px solid var(--gold);}
+    .toast.show{transform:translateY(0);}
+
+    footer{background:var(--ink);color:#5a5040;text-align:center;padding:2rem;font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;}
+
+    @media(max-width:900px){.product-layout{grid-template-columns:1fr;gap:2rem;padding:1.5rem;}.related-grid{grid-template-columns:1fr 1fr;}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">LUMI<span>È</span>RE</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <a href="cart.html" class="nav-cart">◻ Cart <span class="cart-count" id="nav-count">0</span></a>
+</nav>
+
+<div class="breadcrumb">
+  <a href="index.html">Home</a><span class="sep">/</span>
+  <a href="gallery.html">Gallery</a><span class="sep">/</span>
+  <span id="bc-title">Loading...</span>
+</div>
+
+<div class="product-layout">
+  <div class="product-gallery">
+    <img class="main-img" id="main-img" src="" alt=""/>
+    <div class="thumb-row" id="thumb-row"></div>
+    <button class="zoom-btn" onclick="document.getElementById('zoom-modal').classList.add('open')">⤢ Zoom</button>
+  </div>
+  <div class="product-info">
+    <p class="product-label" id="p-medium"></p>
+    <h1 class="product-title" id="p-title"></h1>
+    <p class="product-artist">by <strong id="p-artist"></strong></p>
+    <p class="product-price" id="p-price"></p>
+
+    <div class="specs">
+      <div class="specs-grid">
+        <div class="spec"><div class="spec-label">Medium</div><div class="spec-value" id="s-medium"></div></div>
+        <div class="spec"><div class="spec-label">Dimensions</div><div class="spec-value" id="s-size"></div></div>
+        <div class="spec"><div class="spec-label">Category</div><div class="spec-value" id="s-cat"></div></div>
+        <div class="spec"><div class="spec-label">Availability</div><div class="spec-value" id="s-avail"></div></div>
+      </div>
+    </div>
+
+    <div class="product-actions">
+      <button class="btn-add" id="add-btn" onclick="addToCart()">Add to Cart</button>
+      <a href="cart.html" class="btn-buy" id="buy-btn">Buy Now</a>
+    </div>
+
+    <div class="product-desc">
+      <h4>About this Work</h4>
+      <p id="p-desc"></p>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-item">
+        <button class="acc-header" onclick="toggleAcc(this)">Shipping & Handling <span>+</span></button>
+        <div class="acc-body">All artworks are professionally packed with archival materials and insured during transit. Delivery within 7–14 business days across India, 21–28 days internationally.</div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-header" onclick="toggleAcc(this)">Certificate of Authenticity <span>+</span></button>
+        <div class="acc-body">Every piece comes with a signed Certificate of Authenticity from the artist and the LUMIÈRE gallery, along with full provenance documentation.</div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-header" onclick="toggleAcc(this)">Returns & Exchanges <span>+</span></button>
+        <div class="acc-body">We offer a 14-day return window on all works in original condition. Contact us within 24 hours of receipt to initiate a return.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ZOOM MODAL -->
+<div class="zoom-modal" id="zoom-modal" onclick="this.classList.remove('open')">
+  <button class="zoom-close" onclick="document.getElementById('zoom-modal').classList.remove('open')">×</button>
+  <img id="zoom-img" src="" alt="Zoom"/>
+</div>
+
+<!-- RELATED -->
+<section class="related">
+  <p class="section-label">You May Also Like</p>
+  <h2 class="section-title">Related Works</h2>
+  <div class="related-grid" id="related-grid"></div>
+</section>
+
+<div class="toast" id="toast">✓ Added to cart</div>
+<footer>© 2025 LUMIÈRE Fine Art Gallery</footer>
+
+<script>
+const artworks = [
+  { id:1, title:"Golden Silence", artist:"Elena Vasquez", price:85000, medium:"Oil on Canvas", category:"painting", badge:"New", img:"https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80", size:"90×120 cm", desc:"A luminous exploration of stillness and introspection, 'Golden Silence' layers translucent glazes over a warm ground to evoke dusk light filtering through amber curtains. This work invites the viewer to dwell in the quiet between moments." },
+  { id:2, title:"Urban Reverie", artist:"Marcus Chen", price:120000, medium:"Photography", category:"photography", badge:"", img:"https://images.unsplash.com/photo-1547826039-bdbea1c1b748?w=800&q=80", size:"60×90 cm", desc:"Captured during golden hour in a rain-soaked metropolis, Urban Reverie finds poetry in the geometry of reflections and human movement. Limited edition of 5 prints, each signed and numbered." },
+  { id:3, title:"Chromatic Dream", artist:"Amara Osei", price:65000, medium:"Mixed Media", category:"mixed", badge:"Limited", img:"https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=800&q=80", size:"80×80 cm", desc:"Osei blends acrylic paint with collaged vintage paper and gold leaf to create a vibrant dreamscape inspired by the patterns of West African kente cloth. A bold, joyful work full of rhythm and light." },
+  { id:4, title:"Still Waters", artist:"Priya Nair", price:95000, medium:"Watercolour", category:"painting", badge:"", img:"https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80", size:"70×100 cm", desc:"Nair's delicate watercolour technique creates an almost meditative calm. Soft blues and sage greens flow seamlessly across the paper, evoking the Kerala backwaters at dawn." },
+  { id:5, title:"Fractured Light", artist:"Jonah Reed", price:145000, medium:"Oil on Canvas", category:"painting", badge:"", img:"https://images.unsplash.com/photo-1579541814924-49fef17c5be5?w=800&q=80", size:"120×150 cm", desc:"Reed's largest work to date, 'Fractured Light' dissects the mechanics of vision itself. Prisms of colour splinter across the canvas in a dialogue between Expressionism and contemporary abstraction." },
+  { id:6, title:"Meridian", artist:"Soo-Jin Park", price:55000, medium:"Photography", category:"photography", badge:"", img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80", size:"50×70 cm", desc:"A long-exposure photograph taken at the precise moment of solar meridian. The resulting image blurs the line between landscape and abstraction, time and stillness." },
+  { id:7, title:"Terracotta Soul", artist:"Kwame Asante", price:185000, medium:"Sculpture", category:"sculpture", badge:"Limited", img:"https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=800&q=80", size:"45×30×30 cm", desc:"Hand-thrown and wood-fired, this sculptural vessel speaks to ancestral memory through form and texture. The volcanic surface bears the marks of flame and time — each piece is truly one of a kind." },
+  { id:8, title:"Between Dusk", artist:"Elena Vasquez", price:72000, medium:"Mixed Media", category:"mixed", badge:"", img:"https://images.unsplash.com/photo-1556636530-6b7482d80e3d?w=800&q=80", size:"80×60 cm", desc:"Vasquez returns to the threshold moment of twilight, layering oil, encaustic wax, and found textile to build a richly textured surface that rewards close looking." },
+  { id:9, title:"Echo Chamber", artist:"Marcus Chen", price:98000, medium:"Photography", category:"photography", badge:"Sold", img:"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80", size:"100×70 cm", desc:"An exploration of acoustic architecture, shot in an abandoned concert hall. The interplay of light and shadow creates a haunting visual score across the decaying interior." },
+];
+
+const params = new URLSearchParams(window.location.search);
+const id = parseInt(params.get('id')) || 1;
+const art = artworks.find(a => a.id === id) || artworks[0];
+
+document.getElementById('bc-title').textContent = art.title;
+document.getElementById('p-medium').textContent = art.medium;
+document.getElementById('p-title').textContent = art.title;
+document.getElementById('p-artist').textContent = art.artist;
+document.getElementById('p-price').textContent = '₹' + art.price.toLocaleString('en-IN');
+document.getElementById('s-medium').textContent = art.medium;
+document.getElementById('s-size').textContent = art.size;
+document.getElementById('s-cat').textContent = art.category.charAt(0).toUpperCase() + art.category.slice(1);
+document.getElementById('s-avail').textContent = art.badge === 'Sold' ? 'Sold Out' : (art.badge === 'Limited' ? 'Limited Edition' : 'Available');
+document.getElementById('p-desc').textContent = art.desc;
+
+const mainImg = document.getElementById('main-img');
+mainImg.src = art.img;
+mainImg.alt = art.title;
+document.getElementById('zoom-img').src = art.img;
+
+// Fake additional thumbnails
+const extras = [art.img,
+  `https://images.unsplash.com/photo-1579762593175-20226054cad0?w=200&q=70`,
+  `https://images.unsplash.com/photo-1554188572-9d184257d97b?w=200&q=70`
+];
+const thumbRow = document.getElementById('thumb-row');
+extras.forEach((src, i) => {
+  const img = document.createElement('img');
+  img.src = src; img.className = 'thumb' + (i===0?' active':'');
+  img.onclick = () => {
+    mainImg.src = src;
+    document.getElementById('zoom-img').src = src;
+    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+    img.classList.add('active');
+  };
+  thumbRow.appendChild(img);
+});
+
+if (art.badge === 'Sold') {
+  document.getElementById('add-btn').disabled = true;
+  document.getElementById('add-btn').textContent = 'Sold Out';
+  document.getElementById('add-btn').style.opacity = '0.5';
+  document.getElementById('add-btn').style.cursor = 'not-allowed';
+  document.getElementById('buy-btn').style.pointerEvents = 'none';
+  document.getElementById('buy-btn').style.opacity = '0.5';
+}
+
+function addToCart() {
+  const cart = JSON.parse(localStorage.getItem('lumiere_cart') || '[]');
+  if (!cart.find(c => c.id === art.id)) cart.push(art);
+  localStorage.setItem('lumiere_cart', JSON.stringify(cart));
+  updateCartCount();
+  const t = document.getElementById('toast');
+  t.textContent = `✓ "${art.title}" added to cart`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem('lumiere_cart') || '[]');
+  document.getElementById('nav-count').textContent = cart.length;
+}
+
+// Related
+const related = artworks.filter(a => a.id !== art.id && (a.category === art.category || a.artist === art.artist)).slice(0,3);
+document.getElementById('related-grid').innerHTML = related.map(r => `
+  <a href="product.html?id=${r.id}" class="rel-card">
+    <img src="${r.img}" alt="${r.title}" loading="lazy"/>
+    <p>${r.artist}</p>
+    <h4>${r.title}</h4>
+    <span>₹${r.price.toLocaleString('en-IN')}</span>
+  </a>
+`).join('');
+
+function toggleAcc(btn) {
+  const body = btn.nextElementSibling;
+  const icon = btn.querySelector('span');
+  body.classList.toggle('open');
+  icon.textContent = body.classList.contains('open') ? '−' : '+';
+}
+
+updateCartCount();
+</script>
+</body>
+</html>
